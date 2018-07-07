@@ -7,8 +7,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/:msg', (req, res) => {
-  res.json({ msg: `Received message: ${req.params.msg}` })
+const MESSAGE = 'Be yourself!';
+app.get('/', (req, res) => {
+  res.json({ msg: MESSAGE });
 });
 
 app.listen(3001, () => console.log('Express server listening on port 3001...'));
