@@ -5,12 +5,14 @@ networks:
 services:
   client:
     build: ./client
+    volumes:
+      - ./client/src:/app/src
     networks:
       - main
     ports:
       - 3000:3000
     environment:
-      - SERVER_URL=http://localhost:3001
+      - REACT_APP_SERVER_URL=http://localhost:3001
     entrypoint:
       - npm
       - run
@@ -18,10 +20,13 @@ services:
 
   server:
     build: ./server
+    volumes:
+      - ./server:/app
     networks:
       - main
     ports:
       - 3001:3001
     entrypoint:
-      - node
-      - app.js
+      - npm
+      - run
+      - start
