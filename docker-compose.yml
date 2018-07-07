@@ -1,0 +1,27 @@
+version: '3'
+networks:
+  main: {}
+
+services:
+  client:
+    build: ./client
+    networks:
+      - main
+    ports:
+      - 3000:3000
+    environment:
+      - SERVER_URL=http://localhost:3001
+    entrypoint:
+      - npm
+      - run
+      - start
+
+  server:
+    build: ./server
+    networks:
+      - main
+    ports:
+      - 3001:3001
+    entrypoint:
+      - node
+      - app.js
