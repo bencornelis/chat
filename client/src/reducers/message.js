@@ -1,11 +1,11 @@
 import * as R from 'ramda';
 
 const actionTypes = {
-  'STORE_MESSAGE': 'MESSAGE_STORE_MESSAGE',
+  'STORE_MESSAGES': 'MESSAGE_STORE_MESSAGES',
 };
 
 export const actions = {
-  storeMessage: (message) => ({ type: actionTypes.STORE_MESSAGE, message }),
+  storeMessages: (messages) => ({ type: actionTypes.STORE_MESSAGES, messages }),
 };
 
 const INIT_STATE = {
@@ -16,8 +16,11 @@ export default function reducer(_state = INIT_STATE, action) {
   let state = Object.assign({}, _state);
 
   switch(action.type) {
-    case actionTypes.STORE_MESSAGE:
-      state = R.evolve({ messages: R.append(action.message) })(state);
+    case actionTypes.STORE_MESSAGES:
+      state = R.assoc(
+        'messages',
+        R.concat(state.messages, action.messages)
+      )(state);
       break;
 
     default:

@@ -8,7 +8,7 @@ class MessageActor {
 
   sendMessage = msg => {
     this.websocketService.send(msg);
-    this.dispatch(messageActions.storeMessage(msg));
+    this.dispatch(messageActions.storeMessages([ msg ]));
   }
 }
 

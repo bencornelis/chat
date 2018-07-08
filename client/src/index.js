@@ -22,7 +22,7 @@ const store = createStore(
 );
 
 (async () => {
-  const websocketService = new WebsocketService(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
+  const websocketService = new WebsocketService(process.env.REACT_APP_WEBSOCKET_URL);
 
   try {
     await websocketService.open();
@@ -30,8 +30,20 @@ const store = createStore(
     console.error('Could not establish a websocket connection.', error);
   }
 
+  try {
+    const resp = await fetch(
+      `${process.env.REACT_APP_API_URL}/messages`,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    const { messages } = await resp.json();
+    store.dispatch(messageActions.storeMessages(messages));
+  } catch (error) {
+    console.error('Could not fetch messages.', error);
+  }
+
   websocketService.on(wsEvents.MESSAGE_RECEIVED, message => {
-    store.dispatch(messageActions.storeMessage(message));
+    store.dispatch(messageActions.storeMessages([ message ]));
   });
 
   messageActor = new MessageActor(websocketService, store.dispatch);
