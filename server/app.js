@@ -1,6 +1,16 @@
 const express = require('express');
 const Websocket = require('ws');
+const cassandra = require('cassandra-driver');
+
 const app = express();
+const client = new cassandra.Client({ contactPoints: ['cassandra'], keyspace: 'chat' });
+client.connect(function (err) {
+  if (err) { console.error(err) }
+});
+const query = 'SELECT * FROM messages';
+client.execute(query)
+  .then(result => console.log('QUERYING DB', result))
+  .catch(e => console.error('QUERYING DB ERROR', e))
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");

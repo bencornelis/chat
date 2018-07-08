@@ -34,6 +34,11 @@ services:
 
   cassandra:
     build: ./db
+    networks:
+      - main
+    ports:
+      - 9160:9160
+      - 9042:9042
     volumes:
       - ./db/scripts:/db-scripts
     environment:
