@@ -1,4 +1,5 @@
 const express = require('express');
+const Websocket = require('ws');
 const app = express();
 
 app.use((req, res, next) => {
@@ -7,9 +8,21 @@ app.use((req, res, next) => {
   next();
 });
 
-const MESSAGE = 'Be yourself!';
 app.get('/', (req, res) => {
-  res.json({ msg: MESSAGE });
+  console.log('yes this is a route')
 });
 
-app.listen(3001, () => console.log('Express server listening on port 3001...'));
+const server = app.listen(3001, () => console.log('Express server listening on port 3001...'));
+
+const wss = new Websocket.Server({ server });
+
+wss.on('connection', ws => {
+  ws.on('message', msg => {
+    console.log('received: %s', msg);
+    wss.clients.forEach(client => {
+      if (client !== ws && client.readyState === Websocket.OPEN) {
+        client.send(msg);
+      }
+    })
+  });
+});
