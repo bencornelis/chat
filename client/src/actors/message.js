@@ -6,9 +6,14 @@ class MessageActor {
     this.dispatch = dispatch;
   }
 
-  sendMessage = msg => {
+  sendMessage = (channelId, _msg) => {
+    const msg = {
+      content: _msg,
+      channelId,
+    };
+
     this.websocketService.send(msg);
-    this.dispatch(messageActions.storeMessages([ msg ]));
+    this.dispatch(messageActions.storeMessages(channelId, [ _msg ]));
   }
 }
 

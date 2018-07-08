@@ -6,7 +6,7 @@ CREATE KEYSPACE chat
 use chat;
 
 CREATE TABLE messages (
-  channel_id uuid,
+  channel_id text,
   content text,
   sent_time timeuuid,
   PRIMARY KEY(channel_id, sent_time)

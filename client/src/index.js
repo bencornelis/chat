@@ -5,7 +5,9 @@ import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
 import logger from 'redux-logger';
+import { createEpicMiddleware } from 'redux-observable';
 import reducer from './reducers';
+import epic from './epics';
 import { actions as messageActions } from './reducers/message';
 
 import WebsocketService, { events as wsEvents } from './services/websocket';
@@ -16,10 +18,12 @@ export const Actors = () => ({
   messageActor,
 });
 
+const epicMiddleware = createEpicMiddleware();
 const store = createStore(
   reducer,
-  applyMiddleware(logger)
+  applyMiddleware(logger, epicMiddleware)
 );
+epicMiddleware.run(epic);
 
 (async () => {
   const websocketService = new WebsocketService(process.env.REACT_APP_WEBSOCKET_URL);
@@ -30,20 +34,15 @@ const store = createStore(
     console.error('Could not establish a websocket connection.', error);
   }
 
-  try {
-    const resp = await fetch(
-      `${process.env.REACT_APP_API_URL}/messages`,
-      { headers: { 'Content-Type': 'application/json' } }
-    );
-
-    const { messages } = await resp.json();
-    store.dispatch(messageActions.storeMessages(messages));
-  } catch (error) {
-    console.error('Could not fetch messages.', error);
-  }
+  const queryParams = new URLSearchParams(document.location.search.substring(1));
+  const channelId = queryParams.get('channel_id') || 'default_id';
+  store.dispatch(messageActions.setChannel(channelId));
+  store.dispatch(messageActions.fetchMessages(channelId));
 
   websocketService.on(wsEvents.MESSAGE_RECEIVED, message => {
-    store.dispatch(messageActions.storeMessages([ message ]));
+    if (message.channelId === channelId) {
+      store.dispatch(messageActions.storeMessages(message.channelId, [ message.content ]));
+    }
   });
 
   messageActor = new MessageActor(websocketService, store.dispatch);

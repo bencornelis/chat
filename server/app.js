@@ -9,25 +9,23 @@ dbClient.connect(err => {
   if (err) { console.error(err) }
 });
 
-const CHANNEL_ID = 'b0a03ba2-3655-4fee-bc6f-0963437a48cf';
-
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, Content-Type");
   next();
 });
 
-app.get('/messages', async (req, res) => {
+app.get('/messages/:channelId', async (req, res) => {
   const query = 'SELECT * FROM messages WHERE channel_id = ? ORDER BY sent_time ASC';
 
   let result;
   try {
-    result = await dbClient.execute(query, [ CHANNEL_ID ]);
+    result = await dbClient.execute(query, [ req.params.channelId ]);
   } catch (error) {
     console.error('ERROR: getting all messages', error);
   }
 
-  const messages = result.rows.map(msg => msg.content);
+  const messages = result.rows;
   console.log('QUERYING DB', messages);
   res.json({ messages });
 });
@@ -36,13 +34,14 @@ const server = app.listen(3001, () => console.log('Express server listening on p
 
 const wss = new Websocket.Server({ server });
 
-wss.on('connection', ws => {
+wss.on('connection', (ws) => {
   ws.on('message', async (msg) => {
     console.log('received: %s', msg);
+    const { channelId, content } = JSON.parse(msg);
 
     const query = 'INSERT INTO messages (channel_id, content, sent_time) VALUES(?, ?, ?)';
     try {
-      await dbClient.execute(query, [ CHANNEL_ID, JSON.parse(msg), TimeUuid.now() ]);
+      await dbClient.execute(query, [ channelId, content, TimeUuid.now() ]);
     } catch (error) {
       console.error('ERROR: inserting message', error);
     }
