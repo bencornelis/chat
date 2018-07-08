@@ -31,3 +31,10 @@ services:
       - npm
       - run
       - start
+
+  cassandra:
+    build: ./db
+    volumes:
+      - ./db/scripts:/db-scripts
+    environment:
+      CASSANDRA_CLUSTER_NAME: chat

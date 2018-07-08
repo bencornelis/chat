@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "docker-compose down; docker-compose up"
+    "start": "docker-compose down; docker-compose up",
+    "db:reset": "docker-compose exec cassandra sh -c 'cqlsh -f ./db-scripts/setup.cql'"
   },
   "author": "",
   "license": "ISC"
