@@ -13,22 +13,38 @@ services:
       - 3000:3000
     environment:
       - REACT_APP_API_URL=http://localhost:3001
-      - REACT_APP_WEBSOCKET_URL=ws://localhost:3001
+      - REACT_APP_WEBSOCKET_URL=ws://localhost:3002
     entrypoint:
       - npm
       - run
       - start
 
-  server:
-    build: ./server
+  web_server:
+    build: ./web-server
     volumes:
-      - ./server:/app
+      - ./web-server:/app
     networks:
       - main
     ports:
       - 3001:3001
     depends_on:
       - cassandra
+    entrypoint:
+      - npm
+      - run
+      - start
+
+  ws_server:
+    build: ./ws-server
+    volumes:
+      - ./ws-server:/app
+    networks:
+      - main
+    ports:
+      - 3002:3002
+    depends_on:
+      - cassandra
+      - web_server
     entrypoint:
       - npm
       - run

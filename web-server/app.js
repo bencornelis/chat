@@ -1,5 +1,4 @@
 const express = require('express');
-const Websocket = require('ws');
 const cassandra = require('cassandra-driver');
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 
@@ -30,26 +29,4 @@ app.get('/messages/:channelId', async (req, res) => {
   res.json({ messages });
 });
 
-const server = app.listen(3001, () => console.log('Express server listening on port 3001...'));
-
-const wss = new Websocket.Server({ server });
-
-wss.on('connection', (ws) => {
-  ws.on('message', async (msg) => {
-    console.log('received: %s', msg);
-    const { channelId, content } = JSON.parse(msg);
-
-    const query = 'INSERT INTO messages (channel_id, content, sent_time) VALUES(?, ?, ?)';
-    try {
-      await dbClient.execute(query, [ channelId, content, TimeUuid.now() ]);
-    } catch (error) {
-      console.error('ERROR: inserting message', error);
-    }
-
-    wss.clients.forEach(client => {
-      if (client !== ws && client.readyState === Websocket.OPEN) {
-        client.send(msg);
-      }
-    });
-  });
-});
+app.listen(3001, () => console.log('Express server listening on port 3001...'));
