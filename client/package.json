@@ -11,7 +11,8 @@
     "redux": "^4.0.0",
     "redux-logger": "^3.0.6",
     "redux-observable": "^1.0.0",
-    "rxjs": "^6.2.1"
+    "rxjs": "^6.2.1",
+    "styled-components": "^3.3.3"
   },
   "scripts": {
     "start": "react-scripts start",

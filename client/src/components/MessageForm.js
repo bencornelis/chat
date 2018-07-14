@@ -18,7 +18,7 @@ class MessageForm extends Component {
     return (
       <form>
         <input type='text' ref='_msg'/>
-        <button onClick={this.onClick}>send</button>
+        <button onClick={this.onClick} disabled={!this.props.channelId}>send</button>
       </form>
     );
   }
