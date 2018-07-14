@@ -9,9 +9,8 @@ const fetchMessagesEpic = action$ => action$.pipe(
   mergeMap(action =>
     ajax.getJSON(`${process.env.REACT_APP_API_URL}/channels/${action.channelId}/messages`).pipe(
       mergeMap(response => {
-        const messages = response.messages.map(msg => msg.content);
         return from([
-          actions.setMessages(action.channelId, messages),
+          actions.setMessages(action.channelId, response.messages),
           actions.fetchMessagesFulfilled()
         ]);
       })

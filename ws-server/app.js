@@ -10,9 +10,9 @@ dbClient.connect(err => {
 const wss = new Websocket.Server({ port: 3002 });
 
 wss.on('connection', (ws) => {
-  ws.on('message', async (msg) => {
-    console.log('received: %s', msg);
-    const { channelId, content } = JSON.parse(msg);
+  ws.on('message', async (_msg) => {
+    console.log('received: %s', _msg)
+    const { payload: { channelId, content } } = JSON.parse(_msg);
 
     const query = 'INSERT INTO messages (channel_id, content, sent_time) VALUES(?, ?, ?)';
     try {
@@ -23,7 +23,7 @@ wss.on('connection', (ws) => {
 
     wss.clients.forEach(client => {
       if (client !== ws && client.readyState === Websocket.OPEN) {
-        client.send(msg);
+        client.send(_msg);
       }
     });
   });

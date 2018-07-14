@@ -9,13 +9,13 @@ class Channels extends Component {
 
     return (
       <div>
-        {channels.map(({ channelId, channelName }) => {
+        {channels.map(({ channelId, channelName, updatedSinceVisited }) => {
           return (
             <div
               key={channelId}
               onClick={() => { viewChannel(channelId); }}
               >
-              {channelName}
+              {updatedSinceVisited && '*'} {channelName}
             </div>
           );
         })}

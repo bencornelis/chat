@@ -10,6 +10,8 @@ export const actionTypes = {
   'FETCH_CHANNELS_FULFILLED': 'CHANNEL_FETCH_CHANNELS_FULFILLED',
   'FETCH_MESSAGES_FULFILLED': 'CHANNEL_FETCH_MESSAGES_FULFILLED',
   'SET_CURRENT_CHANNEL': 'CHANNEL_SET_CURRENT_CHANNEL',
+  'RECEIVE_MESSAGE': 'CHANNEL_RECEIVE_MESSAGE',
+  'SET_CHANNEL_UPDATED': 'CHANNEL_SET_CHANNEL_UPDATED',
 };
 
 export const actions = {
@@ -40,11 +42,17 @@ export const actions = {
   viewChannel: (channelId) => {
     return { type: actionTypes.VIEW_CHANNEL, channelId };
   },
+  receiveMessage: (channelId, message) => {
+    return { type: actionTypes.RECEIVE_MESSAGE, channelId, message };
+  },
+  setChannelUpdated: (channelId) => {
+    return { type: actionTypes.SET_CHANNEL_UPDATED, channelId };
+  },
 };
 
 const INIT_STATE = {
   currentChannelId: null,
-  channelIdToChannel: {}, // { channelId: { channelName, channelId } }
+  channelIdToChannel: {}, // { channelId: { channelName, channelId, updatedSinceVisited } }
   channelIdToMessages: {},
   isFetchingChannels: false,
   isFetchingMessages: false,
@@ -57,7 +65,7 @@ export default function reducer(_state = INIT_STATE, action) {
     case actionTypes.ADD_CHANNELS:
       R.forEach(channel => {
         state = R.evolve({
-          channelIdToChannel: R.assoc(channel.channelId, channel),
+          channelIdToChannel: R.assoc(channel.channelId, { ...channel, updatedSinceVisited: false }),
           channelIdToMessages: R.assoc(channel.channelId, [])
         })(state);
       })(action.channels);
@@ -94,6 +102,11 @@ export default function reducer(_state = INIT_STATE, action) {
 
     case actionTypes.SET_CURRENT_CHANNEL:
       state = R.assoc('currentChannelId', action.channelId)(state);
+      state = R.assocPath(['channelIdToChannel', action.channelId, 'updatedSinceVisited'], false)(state);
+      break;
+
+    case actionTypes.SET_CHANNEL_UPDATED:
+      state = R.assocPath(['channelIdToChannel', action.channelId, 'updatedSinceVisited'], true)(state);
       break;
 
     default:

@@ -1,4 +1,5 @@
 import { actions as channelActions } from '../reducers/channel';
+import { messageTypes } from '../services/websocket';
 
 class MessageActor {
   constructor(websocketService, dispatch) {
@@ -8,12 +9,15 @@ class MessageActor {
 
   sendMessage = (channelId, _msg) => {
     const msg = {
-      content: _msg,
-      channelId,
+      type: messageTypes.CHAT_MESSAGE,
+      payload: {
+        channelId,
+        content: _msg,
+      }
     };
 
     this.websocketService.send(msg);
-    this.dispatch(channelActions.addMessage(channelId, _msg));
+    this.dispatch(channelActions.addMessage(channelId, msg.payload));
   }
 }
 

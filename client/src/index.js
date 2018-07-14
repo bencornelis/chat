@@ -9,8 +9,9 @@ import { createEpicMiddleware } from 'redux-observable';
 import reducer from './reducers';
 import epic from './epics';
 import { actions as channelActions } from './reducers/channel';
+import Dispatcher from './dispatcher';
 
-import WebsocketService, { events as wsEvents } from './services/websocket';
+import WebsocketService from './services/websocket';
 import MessageActor from './actors/message';
 
 let messageActor;
@@ -34,16 +35,10 @@ epicMiddleware.run(epic);
     console.error('Could not establish a websocket connection.', error);
   }
 
-  store.dispatch(channelActions.fetchChannels());
-
-  websocketService.on(wsEvents.MESSAGE_RECEIVED, message => {
-    const state = store.getState();
-    if (message.channelId === state.channel.currentChannelId) {
-      store.dispatch(channelActions.addMessage(message.channelId, [ message.content ]));
-    }
-  });
-
+  new Dispatcher(websocketService, store.dispatch);
   messageActor = new MessageActor(websocketService, store.dispatch);
+
+  store.dispatch(channelActions.fetchChannels());
 
   ReactDOM.render(
     <Provider store={store}>

@@ -1,12 +1,21 @@
 import EventEmitter from 'events';
+import { fromEvent } from 'rxjs';
 
-// events
-const MESSAGE_RECEIVED = 'MESSAGE_RECEIVED';
+// internal events
+const REMOTE_MESSAGE = 'REMOTE_MESSAGE';
 
-class WebsocketService extends EventEmitter {
+// message types
+const CHAT_MESSAGE = 1;
+const TYPING = 2;
+const SUBSCRIBED_TO_CHANNEL = 3;
+
+class WebsocketService {
   constructor(url) {
-    super();
     this.url = url;
+
+    this._internalEmitter = new EventEmitter();
+
+    this.message$ = fromEvent(this._internalEmitter, REMOTE_MESSAGE);
   }
 
   open = () => {
@@ -28,14 +37,15 @@ class WebsocketService extends EventEmitter {
 
   _handleMessage = (event) => {
     const message = JSON.parse(event.data);
-    console.log(message);
 
-    this.emit(MESSAGE_RECEIVED, message);
+    this._internalEmitter.emit(REMOTE_MESSAGE, message);
   }
 }
 
-export const events = {
-  MESSAGE_RECEIVED
+export const messageTypes = {
+  CHAT_MESSAGE,
+  TYPING,
+  SUBSCRIBED_TO_CHANNEL,
 };
 
 export default WebsocketService;
