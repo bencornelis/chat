@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
-import message from './message';
+import channel from './channel';
 
 export default combineReducers({
-  message
+  channel
 });

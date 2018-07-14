@@ -8,7 +8,7 @@ import logger from 'redux-logger';
 import { createEpicMiddleware } from 'redux-observable';
 import reducer from './reducers';
 import epic from './epics';
-import { actions as messageActions } from './reducers/message';
+import { actions as channelActions } from './reducers/channel';
 
 import WebsocketService, { events as wsEvents } from './services/websocket';
 import MessageActor from './actors/message';
@@ -34,14 +34,12 @@ epicMiddleware.run(epic);
     console.error('Could not establish a websocket connection.', error);
   }
 
-  const queryParams = new URLSearchParams(document.location.search.substring(1));
-  const channelId = queryParams.get('channel_id') || 'default_id';
-  store.dispatch(messageActions.setChannel(channelId));
-  store.dispatch(messageActions.fetchMessages(channelId));
+  store.dispatch(channelActions.fetchChannels());
 
   websocketService.on(wsEvents.MESSAGE_RECEIVED, message => {
-    if (message.channelId === channelId) {
-      store.dispatch(messageActions.storeMessages(message.channelId, [ message.content ]));
+    const state = store.getState();
+    if (message.channelId === state.channel.currentChannelId) {
+      store.dispatch(channelActions.addMessage(message.channelId, [ message.content ]));
     }
   });
 

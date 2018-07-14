@@ -25,7 +25,7 @@ class MessageForm extends Component {
 }
 
 const mapStateToProps = state => {
-  const channelId = R.path(['message', 'currentChannelId'])(state);
+  const channelId = R.path(['channel', 'currentChannelId'])(state);
   return { channelId };
 }
 

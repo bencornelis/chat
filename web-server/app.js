@@ -1,6 +1,6 @@
 const express = require('express');
 const cassandra = require('cassandra-driver');
-const TimeUuid = require('cassandra-driver').types.TimeUuid;
+const R = require('ramda');
 
 const app = express();
 const dbClient = new cassandra.Client({ contactPoints: ['cassandra'], keyspace: 'chat' });
@@ -8,24 +8,46 @@ dbClient.connect(err => {
   if (err) { console.error(err) }
 });
 
+const mapKeys = R.curry((fn, obj) =>
+  R.fromPairs(R.map(R.adjust(fn, 0), R.toPairs(obj)))
+);
+const camelCase = (str) => str.replace(/[-_]([a-z])/g, m => m[1].toUpperCase());
+const convertKeys = R.map(mapKeys(camelCase));
+
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, Content-Type");
   next();
 });
 
-app.get('/messages/:channelId', async (req, res) => {
+app.get('/channels', async (req, res) => {
+  const query = 'SELECT * FROM channels';
+
+  let result;
+  try {
+    result = await dbClient.execute(query);
+  } catch (error) {
+    console.error('ERROR: getting all channels', error);
+  }
+
+  const channels = convertKeys(result.rows);
+  console.log('DB: getting channels', channels);
+  res.json({ channels });
+});
+
+app.get('/channels/:channelId/messages', async (req, res) => {
   const query = 'SELECT * FROM messages WHERE channel_id = ? ORDER BY sent_time ASC';
 
   let result;
   try {
+    console.log('messages for channel id', req.params.channelId)
     result = await dbClient.execute(query, [ req.params.channelId ]);
   } catch (error) {
     console.error('ERROR: getting all messages', error);
   }
 
-  const messages = result.rows;
-  console.log('QUERYING DB', messages);
+  const messages = convertKeys(result.rows);
+  console.log(`DB: getting messages for channel ${req.params.channelId}`, messages);
   res.json({ messages });
 });
 

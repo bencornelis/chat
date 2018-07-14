@@ -17,8 +17,8 @@ class Messages extends Component {
 }
 
 const mapStateToProps = state => {
-  const channelId = R.path(['message', 'currentChannelId'])(state);
-  const messages = R.path(['message', 'channelIdToMessages', channelId])(state);
+  const channelId = R.path(['channel', 'currentChannelId'])(state);
+  const messages = R.path(['channel', 'channelIdToMessages', channelId])(state) || [];
   return { messages };
 }
 

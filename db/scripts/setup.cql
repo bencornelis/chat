@@ -11,3 +11,13 @@ CREATE TABLE messages (
   sent_time timeuuid,
   PRIMARY KEY(channel_id, sent_time)
 );
+
+CREATE TABLE channels (
+  channel_id text,
+  channel_name text,
+  PRIMARY KEY(channel_id)
+);
+
+INSERT INTO channels (channel_id, channel_name) VALUES ('g', 'general');
+INSERT INTO channels (channel_id, channel_name) VALUES ('j', 'jobs');
+INSERT INTO channels (channel_id, channel_name) VALUES ('r', 'ruby');

@@ -1,4 +1,4 @@
-import { actions as messageActions } from '../reducers/message';
+import { actions as channelActions } from '../reducers/channel';
 
 class MessageActor {
   constructor(websocketService, dispatch) {
@@ -13,7 +13,7 @@ class MessageActor {
     };
 
     this.websocketService.send(msg);
-    this.dispatch(messageActions.storeMessages(channelId, [ _msg ]));
+    this.dispatch(channelActions.addMessage(channelId, _msg));
   }
 }
 
