@@ -1,9 +1,8 @@
 
 exports.up = function(knex, Promise) {
-  return knex.schema.createTable('users', (table) => {
+  return knex.schema.createTable('channels', (table) => {
     table.string('id', 36).unique().primary().notNullable();
     table.string('name').notNullable();
-    table.string('password').notNullable();
 
     const useTimestamps = true;
     const defaultToNow = true;
@@ -13,5 +12,5 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('users');
+  return knex.schema.dropTable('channels');
 };

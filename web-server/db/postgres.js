@@ -1,6 +1,7 @@
-const knexSnakeCaseMappers = require('./knex-util').knexSnakeCaseMappers;
+import { knexSnakeCaseMappers } from '../utils/case';
+import knex from 'knex';
 
-const postgresDB = require('knex')({
+const postgresDB = knex(Object.assign({
   client: 'pg',
   connection: {
     host: process.env.POSTGRES_HOST,
@@ -13,9 +14,8 @@ const postgresDB = require('knex')({
     tableName: 'migrations'
   },
   debug: process.env.POSTGRES_DEBUG,
-  ...knexSnakeCaseMappers()
-});
+}), knexSnakeCaseMappers());
 
 postgresDB.migrate.latest();
 
-module.exports = postgresDB;
+export default postgresDB;
