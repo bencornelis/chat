@@ -29,6 +29,13 @@ services:
       - 3001:3001
     depends_on:
       - cassandra
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=chat
+      - POSTGRES_USER=chat_user
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DEBUG=true
     entrypoint:
       - npm
       - run
@@ -61,3 +68,20 @@ services:
       - ./db/scripts:/db-scripts
     environment:
       CASSANDRA_CLUSTER_NAME: chat
+
+  postgres:
+    image: postgres:10.3
+    networks:
+      - main
+    ports:
+      - 6432:5432
+    environment:
+      - POSTGRES_DB=chat
+      - POSTGRES_USER=chat_user
+      - POSTGRES_PASSWORD=test
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data/pgdata
+
+volumes:
+  pgdata:

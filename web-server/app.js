@@ -1,12 +1,8 @@
 const express = require('express');
-const cassandra = require('cassandra-driver');
 const R = require('ramda');
-
+const cassandraDB = require('./db/cassandra');
+const postgresDB = require('./db/postgres');
 const app = express();
-const dbClient = new cassandra.Client({ contactPoints: ['cassandra'], keyspace: 'chat' });
-dbClient.connect(err => {
-  if (err) { console.error(err) }
-});
 
 const mapKeys = R.curry((fn, obj) =>
   R.fromPairs(R.map(R.adjust(fn, 0), R.toPairs(obj)))
@@ -25,7 +21,7 @@ app.get('/channels', async (req, res) => {
 
   let result;
   try {
-    result = await dbClient.execute(query);
+    result = await cassandraDB.execute(query);
   } catch (error) {
     console.error('ERROR: getting all channels', error);
   }
@@ -41,7 +37,7 @@ app.get('/channels/:channelId/messages', async (req, res) => {
   let result;
   try {
     console.log('messages for channel id', req.params.channelId)
-    result = await dbClient.execute(query, [ req.params.channelId ]);
+    result = await cassandraDB.execute(query, [ req.params.channelId ]);
   } catch (error) {
     console.error('ERROR: getting all messages', error);
   }
