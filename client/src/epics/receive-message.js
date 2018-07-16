@@ -1,32 +1,17 @@
 import { ofType } from 'redux-observable';
 import { actionTypes, actions as channelActions } from '../reducers/channel';
-import { withLatestFrom, map, partition } from 'rxjs/operators';
-import { merge } from 'rxjs';
+import { withLatestFrom, map } from 'rxjs/operators';
 
-const receiveMessageEpic = (action$, state$) => {
-  const [
-    currentChannel$,
-    closedChannel$,
-  ] = action$.pipe(
-    ofType(actionTypes.RECEIVE_MESSAGE),
-    withLatestFrom(state$),
-    partition(([action, state]) =>
-      action.channelId === state.channel.currentChannelId
-    )
-  );
-
-  return merge(
-    currentChannel$.pipe(
-      map(([action, _]) =>
-        channelActions.addMessage(action.channelId, action.message)
-      )
-    ),
-    closedChannel$.pipe(
-      map(([action, _]) =>
-        channelActions.setChannelUpdated(action.channelId)
-      )
-    )
-  );
-}
+const receiveMessageEpic = (action$, state$) => action$.pipe(
+  ofType(actionTypes.RECEIVE_MESSAGE),
+  withLatestFrom(state$),
+  map(([action, state]) => {
+    const forCurrentChannel = action.channelId === state.channel.currentChannelId;
+    return forCurrentChannel ?
+      channelActions.addMessage(action.channelId, action.message)
+      :
+      channelActions.setChannelUpdated(action.channelId);
+  })
+);
 
 export default receiveMessageEpic;
