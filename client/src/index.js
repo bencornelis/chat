@@ -33,7 +33,7 @@ epicMiddleware.run(epic);
   const websocketService = new WebsocketService(process.env.REACT_APP_WEBSOCKET_URL);
 
   try {
-    // await websocketService.open();
+    await websocketService.open();
   } catch (error) {
     console.error('Could not establish a websocket connection.', error);
   }
@@ -41,8 +41,6 @@ epicMiddleware.run(epic);
   new Dispatcher(websocketService, store.dispatch);
   messageAgent = new MessageAgent(websocketService, store.dispatch);
   authAgent = new AuthAgent(store.dispatch);
-
-  // store.dispatch(channelActions.fetchChannels());
 
   store.subscribe(() => {
     localStorage.setItem(AUTH_TOKEN, store.getState().auth.authToken);

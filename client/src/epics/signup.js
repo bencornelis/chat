@@ -14,7 +14,7 @@ const signupEpic = action$ => action$.pipe(
     }).pipe(
       mergeMap(response =>
         [
-          authActions.setToken(response.response.token),
+          authActions.setToken(response.token),
           authActions.setUserLoggedIn(true),
           channelActions.fetchChannels(),
         ]
