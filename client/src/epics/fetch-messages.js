@@ -1,19 +1,22 @@
 import { ofType } from 'redux-observable';
 import { actionTypes, actions } from '../reducers/channel';
-import { mergeMap } from 'rxjs/operators';
-import { from } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { mergeMap, withLatestFrom } from 'rxjs/operators';
+import { ajaxGet } from '../observable/ajax';
 
-const fetchMessagesEpic = action$ => action$.pipe(
+const fetchMessagesEpic = (action$, state$) => action$.pipe(
   ofType(actionTypes.FETCH_MESSAGES),
-  mergeMap(action =>
-    ajax.getJSON(`${process.env.REACT_APP_API_URL}/channels/${action.channelId}/messages`).pipe(
-      mergeMap(response => {
-        return from([
+  withLatestFrom(state$),
+  mergeMap(([action, state]) =>
+    ajaxGet({
+      path: `/channels/${action.channelId}/messages`,
+      authToken: state.auth.authToken
+    }).pipe(
+      mergeMap(response =>
+        [
           actions.setMessages(action.channelId, response.messages),
           actions.fetchMessagesFulfilled()
-        ]);
-      })
+        ]
+      )
     )
   )
 );

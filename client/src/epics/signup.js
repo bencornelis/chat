@@ -2,17 +2,16 @@ import { ofType } from 'redux-observable';
 import { actionTypes, actions as authActions } from '../reducers/auth';
 import { actions as channelActions } from '../reducers/channel';
 import { mergeMap } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
+import { ajaxPost } from '../observable/ajax';
 
 const signupEpic = action$ => action$.pipe(
   ofType(actionTypes.SIGNUP),
   mergeMap(action => {
     const { username, password } = action;
-    return ajax.post(
-      `${process.env.REACT_APP_API_URL}/auth/signup`,
-      { username, password },
-      { 'Content-Type': 'application/json' }
-    ).pipe(
+    return ajaxPost({
+      path: '/auth/signup',
+      body: { username, password },
+    }).pipe(
       mergeMap(response =>
         [
           authActions.setToken(response.response.token),
