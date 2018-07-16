@@ -1,7 +1,7 @@
 
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('channels', (table) => {
-    table.string('id', 36).unique().primary().notNullable();
+    table.increments('id');
     table.string('name').notNullable();
 
     const useTimestamps = true;

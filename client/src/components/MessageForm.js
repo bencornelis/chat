@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Actors } from '../index';
+import { Agents } from '../index';
 import { connect } from 'react-redux';
 import * as R from 'ramda';
 
@@ -10,7 +10,7 @@ class MessageForm extends Component {
     const { channelId } = this.props;
     const { _msg } = this.refs;
     const msg = _msg.value.trim();
-    Actors().messageActor.sendMessage(channelId, msg);
+    Agents().messageAgent.sendMessage(channelId, msg);
     _msg.value = '';
   }
 

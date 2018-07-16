@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/App';
+import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
@@ -12,11 +12,14 @@ import { actions as channelActions } from './reducers/channel';
 import Dispatcher from './dispatcher';
 
 import WebsocketService from './services/websocket';
-import MessageActor from './actors/message';
+import MessageAgent from './agents/message';
+import AuthAgent, { AUTH_TOKEN } from './agents/auth';
 
-let messageActor;
-export const Actors = () => ({
-  messageActor,
+let messageAgent;
+let authAgent;
+export const Agents = () => ({
+  messageAgent,
+  authAgent,
 });
 
 const epicMiddleware = createEpicMiddleware();
@@ -30,15 +33,20 @@ epicMiddleware.run(epic);
   const websocketService = new WebsocketService(process.env.REACT_APP_WEBSOCKET_URL);
 
   try {
-    await websocketService.open();
+    // await websocketService.open();
   } catch (error) {
     console.error('Could not establish a websocket connection.', error);
   }
 
   new Dispatcher(websocketService, store.dispatch);
-  messageActor = new MessageActor(websocketService, store.dispatch);
+  messageAgent = new MessageAgent(websocketService, store.dispatch);
+  authAgent = new AuthAgent(store.dispatch);
 
-  store.dispatch(channelActions.fetchChannels());
+  // store.dispatch(channelActions.fetchChannels());
+
+  store.subscribe(() => {
+    localStorage.setItem(AUTH_TOKEN, store.getState().auth.authToken);
+  });
 
   ReactDOM.render(
     <Provider store={store}>

@@ -1,12 +1,15 @@
 import express from 'express';
 import controllers from './controllers';
+import bodyParser from 'body-parser';
+import bearerToken from 'express-bearer-token';
+import cors from 'cors';
+
 const app = express();
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, Content-Type");
-  next();
-});
+app.use(cors());
+app.options('*', cors());
+app.use(bearerToken());
+app.use(bodyParser.json());
 
 app.use('/api', controllers);
 

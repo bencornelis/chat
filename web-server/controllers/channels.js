@@ -1,12 +1,14 @@
 import express from 'express';
 import Channel from '../models/channel';
+import authMiddleware from '../middleware/auth';
 
 const router = express.Router();
+router.use(authMiddleware.isUserAuthenticated);
 
 router.get('/', async (req, res) => {
   let channels;
   try {
-    channels = await Channel.getChannels();
+    channels = await Channel.getAll();
   } catch (error) {
     console.error(error);
     res.sendStatus(500);

@@ -1,7 +1,7 @@
 import { actions as channelActions } from '../reducers/channel';
 import { messageTypes } from '../services/websocket';
 
-class MessageActor {
+class MessageAgent {
   constructor(websocketService, dispatch) {
     this.websocketService = websocketService;
     this.dispatch = dispatch;
@@ -21,4 +21,4 @@ class MessageActor {
   }
 }
 
-export default MessageActor;
+export default MessageAgent;

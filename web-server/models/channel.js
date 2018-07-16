@@ -5,7 +5,7 @@ import * as R from 'ramda';
 
 const convertKeys = R.map(camelCaseKeys);
 
-const getChannels = async () => {
+const getAll = async () => {
   const query = 'SELECT * FROM channels';
 
   let result;
@@ -36,6 +36,6 @@ const getMessages = async (channelId) => {
 }
 
 export default {
-  getChannels,
+  getAll,
   getMessages,
 };

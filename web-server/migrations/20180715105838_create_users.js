@@ -1,8 +1,8 @@
 
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('users', (table) => {
-    table.string('id', 36).unique().primary().notNullable();
-    table.string('name').notNullable();
+    table.increments('id');
+    table.string('username').notNullable();
     table.string('password').notNullable();
 
     const useTimestamps = true;
