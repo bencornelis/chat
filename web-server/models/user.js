@@ -19,6 +19,10 @@ const findBy = async (params) => {
   return user;
 }
 
+const find = async (id) => {
+  return findBy({ id });
+}
+
 const getByIds = async (userIds) => {
   let users;
   try {
@@ -67,6 +71,7 @@ const create = async (userData) => {
 
 export default {
   findBy,
+  find,
   getByIds,
   createMany,
   create,

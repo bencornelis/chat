@@ -5,6 +5,7 @@ import viewChannelEpic from './view-channel';
 import receiveMessageEpic from './receive-message';
 import loginEpic from './login';
 import signupEpic from './signup';
+import fetchMe from './fetch-me';
 
 export default combineEpics(
   fetchChannelsEpic,
@@ -13,4 +14,5 @@ export default combineEpics(
   receiveMessageEpic,
   loginEpic,
   signupEpic,
+  fetchMe
 );

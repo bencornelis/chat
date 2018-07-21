@@ -3,6 +3,7 @@ import User from '../models/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import * as R from 'ramda';
+import authMiddleware from '../middleware/auth';
 
 const router = express.Router();
 
@@ -56,6 +57,25 @@ router.post('/login', async (req, res) => {
 
   const token = jwt.sign({ id: user.id }, process.env.SECRET, { expiresIn: 86400 });
   res.json({ auth: true, token, user: filterUser(user) });
+});
+
+router.get('/user/me', authMiddleware.isUserAuthenticated, async (req, res) => {
+  const userId = req.userId;
+
+  let user;
+  try {
+    user = await User.find(userId);
+  } catch(error) {
+    console.error('error finding user', error);
+    res.sendStatus(500);
+  }
+
+  if (!user) {
+    console.log('could not find user with id', userId);
+    return res.sendStatus(404);
+  }
+
+  res.json({ user: filterUser(user) });
 });
 
 export default router;

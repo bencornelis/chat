@@ -7,6 +7,8 @@ export const actionTypes = {
   'SET_TOKEN': 'AUTH_SET_TOKEN',
   'SET_USER_LOGGED_IN': 'AUTH_SET_USER_LOGGED_IN',
   'SET_USER': 'AUTH_SET_USER',
+  'FETCH_ME': 'AUTH_FETCH_ME',
+  'FETCH_ME_FULFILLED': 'AUTH_FETCH_ME_FULFILLED',
 };
 
 export const actions = {
@@ -28,12 +30,19 @@ export const actions = {
   setUser: (user) => {
     return { type: actionTypes.SET_USER, user };
   },
+  fetchMe: () => {
+    return { type: actionTypes.FETCH_ME };
+  },
+  fetchMeFulfilled: () => {
+    return { type: actionTypes.FETCH_ME_FULFILLED };
+  },
 };
 
 const INIT_STATE = {
   userLoggedIn: false,
   user: null,
   authToken: null,
+  isFetchingMe: false,
 };
 
 export default function reducer(_state = INIT_STATE, action) {
@@ -61,6 +70,14 @@ export default function reducer(_state = INIT_STATE, action) {
 
     case actionTypes.SET_USER:
       state = R.assoc('user', action.user)(state);
+      break;
+
+    case actionTypes.FETCH_ME:
+      state = R.assoc('isFetchingMe', true)(state);
+      break;
+
+    case actionTypes.FETCH_ME_FULFILLED:
+      state = R.assoc('isFetchingMe', false)(state);
       break;
 
     default:

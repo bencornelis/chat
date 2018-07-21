@@ -1,10 +1,22 @@
 import { actions as authActions } from '../reducers/auth';
 
-export const AUTH_TOKEN = 'AUTH_TOKEN';
+const AUTH_TOKEN = 'authToken';
 
 class AuthAgent {
-  constructor(dispatch) {
-    this.dispatch = dispatch;
+  constructor(store) {
+    this.dispatch = store.dispatch;
+
+    const authToken = localStorage.getItem(AUTH_TOKEN);
+
+    if (authToken) {
+      store.dispatch(authActions.setToken(authToken));
+      store.dispatch(authActions.fetchMe());
+    }
+
+    store.subscribe(() => {
+      const token = store.getState().auth.authToken;
+      localStorage.setItem(AUTH_TOKEN, token ? token : '');
+    });
   }
 
   login = (username, password) => {
@@ -17,7 +29,6 @@ class AuthAgent {
 
   logout = () => {
     this.dispatch(authActions.logout());
-    localStorage.setItem(AUTH_TOKEN, null);
   }
 }
 

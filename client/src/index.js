@@ -3,17 +3,12 @@ import ReactDOM from 'react-dom';
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux';
-import { applyMiddleware, createStore } from 'redux';
-import logger from 'redux-logger';
-import { createEpicMiddleware } from 'redux-observable';
-import reducer from './reducers';
-import epic from './epics';
-import { actions as channelActions } from './reducers/channel';
 import Dispatcher from './dispatcher';
+import createStoreWithPreloadedState from './store';
 
 import WebsocketService from './services/websocket';
 import MessageAgent from './agents/message';
-import AuthAgent, { AUTH_TOKEN } from './agents/auth';
+import AuthAgent from './agents/auth';
 
 let messageAgent;
 let authAgent;
@@ -22,14 +17,9 @@ export const Agents = () => ({
   authAgent,
 });
 
-const epicMiddleware = createEpicMiddleware();
-const store = createStore(
-  reducer,
-  applyMiddleware(logger, epicMiddleware)
-);
-epicMiddleware.run(epic);
-
 (async () => {
+  const store = createStoreWithPreloadedState();
+
   const websocketService = new WebsocketService(process.env.REACT_APP_WEBSOCKET_URL);
 
   try {
@@ -40,11 +30,7 @@ epicMiddleware.run(epic);
 
   new Dispatcher(websocketService, store.dispatch);
   messageAgent = new MessageAgent(websocketService, store);
-  authAgent = new AuthAgent(store.dispatch);
-
-  store.subscribe(() => {
-    localStorage.setItem(AUTH_TOKEN, store.getState().auth.authToken);
-  });
+  authAgent = new AuthAgent(store);
 
   ReactDOM.render(
     <Provider store={store}>
