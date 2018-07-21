@@ -6,6 +6,7 @@ export const actionTypes = {
   'LOGOUT': 'AUTH_LOGOUT',
   'SET_TOKEN': 'AUTH_SET_TOKEN',
   'SET_USER_LOGGED_IN': 'AUTH_SET_USER_LOGGED_IN',
+  'SET_USER': 'AUTH_SET_USER',
 };
 
 export const actions = {
@@ -24,10 +25,14 @@ export const actions = {
   setUserLoggedIn: (userLoggedIn) => {
     return { type: actionTypes.SET_USER_LOGGED_IN, userLoggedIn };
   },
+  setUser: (user) => {
+    return { type: actionTypes.SET_USER, user };
+  },
 };
 
 const INIT_STATE = {
   userLoggedIn: false,
+  user: null,
   authToken: null,
 };
 
@@ -52,6 +57,10 @@ export default function reducer(_state = INIT_STATE, action) {
 
     case actionTypes.SET_USER_LOGGED_IN:
       state = R.assoc('userLoggedIn', action.userLoggedIn)(state);
+      break;
+
+    case actionTypes.SET_USER:
+      state = R.assoc('user', action.user)(state);
       break;
 
     default:

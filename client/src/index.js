@@ -39,7 +39,7 @@ epicMiddleware.run(epic);
   }
 
   new Dispatcher(websocketService, store.dispatch);
-  messageAgent = new MessageAgent(websocketService, store.dispatch);
+  messageAgent = new MessageAgent(websocketService, store);
   authAgent = new AuthAgent(store.dispatch);
 
   store.subscribe(() => {

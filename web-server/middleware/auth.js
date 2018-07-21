@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken';
 
 const isUserAuthenticated = (req, res, next) => {
-  console.log(req.headers)
-  console.log('TOKEN', req.token);
   if (!req.token) {
     res.status(403).send({ auth: false, message: 'No token provided.' });
   }

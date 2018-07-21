@@ -16,6 +16,7 @@ const signupEpic = action$ => action$.pipe(
         [
           authActions.setToken(response.token),
           authActions.setUserLoggedIn(true),
+          authActions.setUser(response.user),
           channelActions.fetchChannels(),
         ]
       )

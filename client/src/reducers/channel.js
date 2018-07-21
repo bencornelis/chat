@@ -65,8 +65,8 @@ export default function reducer(_state = INIT_STATE, action) {
     case actionTypes.ADD_CHANNELS:
       R.forEach(channel => {
         state = R.evolve({
-          channelIdToChannel: R.assoc(channel.channelId, { ...channel, updatedSinceVisited: false }),
-          channelIdToMessages: R.assoc(channel.channelId, [])
+          channelIdToChannel: R.assoc(channel.id, { ...channel, updatedSinceVisited: false }),
+          channelIdToMessages: R.assoc(channel.id, [])
         })(state);
       })(action.channels);
       break;

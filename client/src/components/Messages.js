@@ -9,7 +9,7 @@ class Messages extends Component {
     return (
       <div>
         {messages.map((message, idx) => {
-          return <div key={idx}>{message}</div>;
+          return <div key={idx}>{message.username}: {message.content}</div>;
         })}
       </div>
     );
@@ -18,10 +18,7 @@ class Messages extends Component {
 
 const mapStateToProps = state => {
   const channelId = R.path(['channel', 'currentChannelId'])(state);
-  const messages = R.pipe(
-    R.pathOr([], ['channel', 'channelIdToMessages', channelId]),
-    R.map(R.prop('content'))
-  )(state);
+  const messages = R.pathOr([], ['channel', 'channelIdToMessages', channelId])(state);
 
   return { messages };
 }

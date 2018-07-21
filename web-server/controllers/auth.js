@@ -2,8 +2,12 @@ import express from 'express';
 import User from '../models/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import * as R from 'ramda';
 
 const router = express.Router();
+
+const SAFE_USER_FIELDS = ['id', 'username'];
+const filterUser = R.pick(SAFE_USER_FIELDS);
 
 router.post('/signup', async (req, res) => {
   const {
@@ -25,11 +29,10 @@ console.log('signing up user', username, password)
   }
 
   const token = jwt.sign({ id }, process.env.SECRET, { expiresIn: 86400 });
-  res.json({ auth: true, token });
+  res.json({ auth: true, token, user: { id, username } });
 });
 
 router.post('/login', async (req, res) => {
-  console.log('headers', req.headers)
   const {
     username,
     password,
@@ -40,16 +43,21 @@ router.post('/login', async (req, res) => {
     user = await User.findBy({ username });
   } catch(error) {
     console.error('could not log in user', error);
-    res.sendStatus(404).send('No user found');
+    res.sendStatus(500);
+  }
+
+  if (!user) {
+    console.log('could not find user with username', username);
+    return res.sendStatus(404);
   }
 
   const isPasswordValid = bcrypt.compareSync(password, user.password);
   if (!isPasswordValid) {
-    res.status(401).send({ auth: false, token: null });
+    return res.status(401).send({ auth: false, token: null });
   }
 
   const token = jwt.sign({ id: user.id }, process.env.SECRET, { expiresIn: 86400 });
-  res.json({ auth: true, token });
+  res.json({ auth: true, token, user: filterUser(user) });
 });
 
 export default router;

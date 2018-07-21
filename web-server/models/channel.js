@@ -5,18 +5,17 @@ import * as R from 'ramda';
 
 const convertKeys = R.map(camelCaseKeys);
 
-const getAll = async () => {
-  const query = 'SELECT * FROM channels';
+export const CHANNELS_TABLE = 'channels';
 
-  let result;
+const getAll = async () => {
+  let channels;
   try {
-    result = await cassandraDB.execute(query);
+    channels = await postgresDB.select().from(CHANNELS_TABLE);
   } catch (error) {
     console.error('DB: getting all channels', error);
     throw error;
   }
 
-  const channels = convertKeys(result.rows);
   return channels;
 }
 
@@ -25,7 +24,7 @@ const getMessages = async (channelId) => {
 
   let result;
   try {
-    result = await cassandraDB.execute(query, [ channelId ]);
+    result = await cassandraDB.execute(query, [ channelId ], { prepare : true });
   } catch (error) {
     console.error(`DB: getting all messages for channel ${channelId}`, error);
     throw error;

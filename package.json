@@ -7,9 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "docker-compose up",
     "restart": "docker-compose down && docker-compose up",
+    "app:reset": "docker-compose down && docker-compose build --no-cache && docker-compose up",
     "cassandra:reset": "docker-compose exec cassandra sh -c 'cqlsh -f ./db-scripts/setup.cql'",
     "postgres:reset": "sh ./scripts/postgres-destroy.sh && touch ./web-server/app.js",
-    "app:reset": "docker-compose down && docker-compose build --no-cache && docker-compose up"
+    "db:reset": "npm run cassandra:reset && npm run postgres:reset",
+    "db:seed": "curl -X POST http://localhost:3001/api/seed"
   },
   "author": "",
   "license": "ISC"
