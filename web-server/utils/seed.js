@@ -1,19 +1,26 @@
-import postgresDB from '../db/postgres';
-import { CHANNELS_TABLE } from '../models/channel';
+import Channel from '../models/channel';
+import User from '../models/user';
+
+const channels = [
+  'general',
+  'funny',
+  'jobs',
+];
+
+const users = [
+  {
+    username: 'marco',
+    password: 'test'
+  },
+  {
+    username: 'kublai',
+    password: 'test'
+  },
+];
 
 export default function seed() {
   console.log('seeding database...');
 
-  return postgresDB(CHANNELS_TABLE)
-  .insert([
-    {
-      name: 'general'
-    },
-    {
-      name: 'funny'
-    },
-    {
-      name: 'news'
-    }
-  ]);
+  return Channel.createMany(channels)
+    .then(() => User.createMany(users));
 }

@@ -1,20 +1,9 @@
 import postgresDB from '../db/postgres';
+import * as R from 'ramda';
+import bcrypt from 'bcryptjs';
 
 export const USERS_TABLE = 'users';
-
-const create = async ({ username, password }) => {
-  let id;
-  try {
-    [ id ] = await postgresDB.table(USERS_TABLE)
-      .insert({ username, password })
-      .returning('id');
-  } catch(error) {
-    console.error('DB: could not create user with password', error);
-    throw error;
-  }
-
-  return id;
-}
+const CREATE_FIELDS = [ 'username', 'password' ];
 
 const findBy = async (params) => {
   let user;
@@ -44,8 +33,41 @@ const getByIds = async (userIds) => {
   return users;
 }
 
+const createMany = async (usersData) => {
+  const pickFields   = R.pick(CREATE_FIELDS);
+  const hashPassword = password => bcrypt.hashSync(password, 8);
+  const withHashedPassword = userData => {
+    return R.assoc('password', hashPassword(userData.password))(userData)
+  };
+
+  const prepareUserData = R.pipe(
+    pickFields,
+    withHashedPassword
+  );
+
+  const usersInsertData = R.map(prepareUserData)(usersData);
+  let ids;
+  try {
+    ids = await postgresDB
+      .insert(usersInsertData)
+      .into(USERS_TABLE)
+      .returning('id');
+  } catch(error) {
+    console.error('DB: could not create users', usersInsertData, error);
+    throw error;
+  }
+
+  return ids;
+}
+
+const create = async (userData) => {
+  const [ id ] = await createMany(userData);
+  return id;
+}
+
 export default {
-  create,
   findBy,
   getByIds,
+  createMany,
+  create,
 };

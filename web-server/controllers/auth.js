@@ -14,14 +14,12 @@ router.post('/signup', async (req, res) => {
     username,
     password,
   } = req.body;
-console.log('signing up user', username, password)
-  const hashedPassword = bcrypt.hashSync(password, 8);
 
   let id;
   try {
     id = await User.create({
       username,
-      password: hashedPassword
+      password,
     });
   } catch(error) {
     console.error('could not sign up user', error);
