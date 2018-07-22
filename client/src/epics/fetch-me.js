@@ -4,7 +4,7 @@ import { actions as channelActions } from '../reducers/channel';
 import { withLatestFrom, mergeMap } from 'rxjs/operators';
 import { ajaxGet } from '../observable/ajax';
 
-const fetchMe = (action$, state$) => action$.pipe(
+const fetchMeEpic = (action$, state$) => action$.pipe(
   ofType(actionTypes.FETCH_ME),
   withLatestFrom(state$),
   mergeMap(([action, state]) =>
@@ -18,10 +18,11 @@ const fetchMe = (action$, state$) => action$.pipe(
           authActions.setUserLoggedIn(true),
           authActions.fetchMeFulfilled(),
           channelActions.fetchChannels(),
+          chatActions.start()
         ]
       )
     )
   )
 );
 
-export default fetchMe;
+export default fetchMeEpic;

@@ -4,9 +4,9 @@ import { createEpicMiddleware } from 'redux-observable';
 import reducer from '../reducers';
 import epic from '../epics';
 
-const epicMiddleware = createEpicMiddleware();
 
-export default function createStoreWithPreloadedState(preloadedState = {}) {
+export default function createStoreWithPreloadedState(preloadedState, dependencies) {
+  const epicMiddleware = createEpicMiddleware({ dependencies });
   const store = createStore(
     reducer,
     preloadedState,

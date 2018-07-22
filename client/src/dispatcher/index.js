@@ -5,11 +5,9 @@ import { filter } from 'rxjs/operators';
 class Dispatcher {
   constructor(websocketService, dispatch) {
     websocketService
-      .message$.pipe(
-        filter(msg => msg.type === messageTypes.CHAT_MESSAGE)
-      )
+      .chat$
       .subscribe(msg =>
-        dispatch(channelActions.receiveMessage(msg.payload.channelId, msg.payload))
+        dispatch(channelActions.receiveMessage(msg.channelId, msg))
       );
   }
 }

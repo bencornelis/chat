@@ -18,6 +18,7 @@ const loginEpic = action$ => action$.pipe(
           authActions.setUserLoggedIn(true),
           authActions.setUser(response.user),
           channelActions.fetchChannels(),
+          chatActions.start()
         ]
       )
     );

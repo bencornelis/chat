@@ -18,18 +18,15 @@ export const Agents = () => ({
 });
 
 (async () => {
-  const store = createStoreWithPreloadedState();
-
   const websocketService = new WebsocketService(process.env.REACT_APP_WEBSOCKET_URL);
-
-  try {
-    await websocketService.open();
-  } catch (error) {
-    console.error('Could not establish a websocket connection.', error);
-  }
+  const dependencies = {
+    openChat$: websocketService.open$,
+    sendMessage: websocketService.send
+  };
+  const store = createStoreWithPreloadedState({}, dependencies);
 
   new Dispatcher(websocketService, store.dispatch);
-  messageAgent = new MessageAgent(websocketService, store);
+  messageAgent = new MessageAgent(dispatch);
   authAgent = new AuthAgent(store);
 
   ReactDOM.render(
